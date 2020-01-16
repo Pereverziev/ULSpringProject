@@ -25,7 +25,7 @@ public class Webhook {
     public void tradingView(@RequestBody TradingViewRequest alert) {
         LOGGER.info("Got request:\n" + alert.toString());
     }
-    
+
     @PostMapping(consumes = "text/plain;charset=utf-8")
     public void tradingView(String message) {
         LOGGER.info("Got message:" + message);
