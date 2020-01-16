@@ -1,17 +1,17 @@
 package bot.services;
 
+import bot.models.TradingViewRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Controller
+@RequestMapping("/tradingview")
 public class Webhook {
 
     @PostConstruct
@@ -21,8 +21,8 @@ public class Webhook {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Webhook.class);
 
-    @PostMapping(path = "/tradingview")
-    public void tradingView(@RequestBody Object alert) {
+    @PostMapping
+    public void tradingView(@RequestBody TradingViewRequest alert) {
         LOGGER.info("Got request:\n" + alert.toString());
     }
 }

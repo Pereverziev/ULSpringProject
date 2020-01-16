@@ -20,8 +20,8 @@ public class AssetService {
 
     @PostConstruct
     public void init() {
-//        refreshCache();
-//        assetToBalanceMap.values().forEach(ss -> System.out.println(ss));
+        refreshCache();
+        assetToBalanceMap.values().forEach(ss -> System.out.println(ss));
     }
 
     public MarginAssetBalance getByAssetName(String asset) {
