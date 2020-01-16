@@ -21,8 +21,13 @@ public class Webhook {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Webhook.class);
 
-    @PostMapping
+    @PostMapping(consumes = "application/json")
     public void tradingView(@RequestBody TradingViewRequest alert) {
         LOGGER.info("Got request:\n" + alert.toString());
+    }
+    
+    @PostMapping(consumes = "text/plain;charset=utf-8")
+    public void tradingView(String message) {
+        LOGGER.info("Got message:" + message);
     }
 }
