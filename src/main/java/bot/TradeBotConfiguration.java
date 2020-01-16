@@ -2,11 +2,13 @@ package bot;
 
 import com.binance.api.client.BinanceApiClientFactory;
 import com.binance.api.client.BinanceApiMarginRestClient;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@SpringBootApplication
 //@PropertySource("classpath:configuration.properties")
 @ComponentScan
 public class TradeBotConfiguration {
