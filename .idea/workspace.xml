@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8b3d1ef7-9a5a-4107-b807-a0d65b3b6043" name="Default Changelist" comment="commit">
-      <change beforePath="$PROJECT_DIR$/src/main/java/bot/services/Webhook.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bot/services/Webhook.java" afterDir="false" />
-    </list>
+    <list default="true" id="8b3d1ef7-9a5a-4107-b807-a0d65b3b6043" name="Default Changelist" comment="commit" />
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/.gradle/" />
     <ignored path="$PROJECT_DIR$/build/" />
@@ -238,7 +236,7 @@
     <property name="Repository.Attach.Annotations" value="false" />
     <property name="Repository.Attach.JavaDocs" value="false" />
     <property name="Repository.Attach.Sources" value="false" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1579256515594" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1579260362660" />
     <property name="last_opened_file_path" value="C:/binance-api-client-1.0.0.jar!/" />
     <property name="project.structure.last.edited" value="Problems" />
     <property name="project.structure.proportion" value="0.15" />
@@ -323,7 +321,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1912" y="-4" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2468017" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
