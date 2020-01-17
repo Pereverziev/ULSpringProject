@@ -21,7 +21,6 @@ public class AssetService {
     @PostConstruct
     public void init() {
         refreshCache();
-        assetToBalanceMap.values().forEach(ss -> System.out.println(ss));
     }
 
     public MarginAssetBalance getByAssetName(String asset) {
@@ -33,5 +32,4 @@ public class AssetService {
         assetToBalanceMap = restClient.getAccount().getUserAssets().stream().filter(asset -> assetMap.containsKey(asset.getAsset()) ||
                 assetMap.containsValue(asset.getAsset())).collect(Collectors.toMap(MarginAssetBalance::getAsset, Function.identity()));
     }
-
 }
