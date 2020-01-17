@@ -2,15 +2,16 @@ package bot;
 
 import com.binance.api.client.BinanceApiClientFactory;
 import com.binance.api.client.BinanceApiMarginRestClient;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
-@Configuration
 @SpringBootApplication
 //@PropertySource("classpath:configuration.properties")
-@ComponentScan
 public class TradeBotConfiguration {
     @Bean
     public BinanceApiMarginRestClient binanceApiMarginRestClient() {
@@ -18,4 +19,8 @@ public class TradeBotConfiguration {
         return binanceApiClientFactory.newMarginRestClient();
     }
 
+    @Bean
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        return builder.build();
+    }
 }

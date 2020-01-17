@@ -13,11 +13,11 @@ repositories {
 }
 
 dependencies {
-//    compile group: 'org.springframework.boot', name: 'spring-boot-starter', version: '2.2.2.RELEASE'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.2.2.RELEASE'
-//    compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: '2.2.2.RELEASE'
-    compile group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
-    compile group: 'org.hibernate', name: 'hibernate-validator', version: '6.1.0.Final'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.10.1'
+    compileOnly("org.projectlombok:lombok:1.18.10")
+    annotationProcessor("org.projectlombok:lombok:1.18.10")
 
     implementation name: 'binance-api'
     compile group: 'com.squareup.retrofit2', name: 'converter-jackson', version: '2.4.0'

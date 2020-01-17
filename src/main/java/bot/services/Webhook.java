@@ -3,31 +3,20 @@ package bot.services;
 import bot.models.TradingViewRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
-
-@Controller
-@RequestMapping("/tradingview")
+@RestController
+@RequestMapping
 public class Webhook {
-
-    @PostConstruct
-    public void init() {
-        LOGGER.info("hello world");
-    }
-
     private static final Logger LOGGER = LoggerFactory.getLogger(Webhook.class);
 
-    @PostMapping(consumes = "application/json")
+    @PostMapping(value = "/tradingview", consumes = "application/json")
     public void tradingView(@RequestBody TradingViewRequest alert) {
-        LOGGER.info("Got request:\n" + alert.toString());
+        LOGGER.info("Got request:" + alert.toString());
     }
 
-    @PostMapping(consumes = "text/plain;charset=utf-8")
-    public void tradingView(String message) {
+    @PostMapping(value = "/tradingview", consumes = "text/plain;charset=utf-8")
+    public void tradingView(@RequestParam String message) {
         LOGGER.info("Got message:" + message);
     }
 }
