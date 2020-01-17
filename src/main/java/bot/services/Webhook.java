@@ -12,7 +12,7 @@ public class Webhook {
 
     @PostMapping(value = "/tradingview", consumes = "application/json")
     public void tradingView(@RequestBody TradingViewRequest alert) {
-        LOGGER.info("Got request:" + alert.toString());
+        LOGGER.info("\nGot request:" + alert.toString() + "\n");
     }
 
     @PostMapping(value = "/tradingview", consumes = "text/plain")
