@@ -19,7 +19,7 @@ public class Webhook {
     @PostMapping(value = "/tradingview", consumes = "application/json")
     public void tradingView(@RequestBody TradingViewRequest alert) {
         timeToRequestMap.put(LocalDateTime.now(), alert);
-        System.out.println("Got request:" + alert.toString() + "\n List of cached requests:\n");
+        System.out.println("Got request:" + alert.toString() + "\n List of cached requests:");
         for (Map.Entry<LocalDateTime, TradingViewRequest> entry : timeToRequestMap.entrySet()) {
             LOGGER.info(entry.getKey().toString() + ", request:" + entry.getValue().toString());
         }

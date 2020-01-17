@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8b3d1ef7-9a5a-4107-b807-a0d65b3b6043" name="Default Changelist" comment="commit">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bot/services/Webhook.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bot/services/Webhook.java" afterDir="false" />
-    </list>
+    <list default="true" id="8b3d1ef7-9a5a-4107-b807-a0d65b3b6043" name="Default Changelist" comment="commit" />
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/.gradle/" />
     <ignored path="$PROJECT_DIR$/build/" />
