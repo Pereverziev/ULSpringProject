@@ -31,6 +31,7 @@ public class AssetService {
 
     @PostConstruct
     public void init() {
+        System.out.println("New life");
         assetList = assetPairList.stream().flatMap(string -> Stream.of(string.subSequence(0, string.length() - 4).toString(), string.substring(string.length() - 4))).collect(Collectors.toSet());
 //        for (String s : assetList) {
 //            System.out.println(getByAssetName(s));
