@@ -1,16 +1,13 @@
-package bot.services;
+package bot.controller;
 
 import bot.handler.H1AlertHandler;
 import bot.handler.M5AlertHandler;
-import bot.models.TradingViewRequest;
+import bot.model.TradingViewRequest;
+import bot.service.AssetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping
@@ -23,23 +20,17 @@ public class Webhook {
     private M5AlertHandler m5AlertHandler;
     @Autowired
     private H1AlertHandler h1AlertHandler;
-    private Map<LocalDateTime, TradingViewRequest> timeToRequestMap = new HashMap<>();
-
-
+    @Autowired
+    private AssetService assetService;
 
     @PostMapping(value = "/tradingview", consumes = "application/json")
     public void tradingView(@RequestBody TradingViewRequest alert) {
-//        timeToRequestMap.put(alert.setRequestTime(LocalDateTime.now()))
+        LOGGER.info("Got request:" + alert);
         if (alert.getTimeframe().equals(M5ALERT)) {
             m5AlertHandler.handleAlert(alert);
-        } else {
+        } else if (alert.getTimeframe().equals(H1ALERT)) {
             h1AlertHandler.handleAlert(alert);
         }
-
-//        System.out.println("Got request:" + alert.toString() + "\n List of cached requests:");
-//        for (Map.Entry<LocalDateTime, TradingViewRequest> entry : timeToRequestMap.entrySet()) {
-//            LOGGER.info(entry.getKey().toString() + ", request:" + entry.getValue().toString());
-//        }
     }
 
     @PostMapping(value = "/tradingview", consumes = "text/plain")
