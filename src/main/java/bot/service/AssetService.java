@@ -17,6 +17,8 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 @ConfigurationProperties
@@ -33,15 +35,14 @@ public class AssetService {
     @Value("${assetPair}")
     private List<String> assetPairList;
     private Map<String, String> trendMap;
-    //    private Set<String> assetList;
+    private Set<String> assetList;
     private Map<String, Integer> assetPairRounding;
     private Map<String, TradingViewRequest> assetPairTimeframeToRequestsMap = new HashMap<>();
-    private BigDecimal deposit; //Todo take i little bit less than deposit
 
     @PostConstruct
     public void init() {
-//        assetList = assetPairList.stream().flatMap(string -> Stream.of(string.subSequence(0, string.length() - 4).toString(), string.substring(string.length() - 4))).collect(Collectors.toSet());
-        deposit = new BigDecimal(getByAssetName(USDT_SUFFIX).getFree()); //TODO считать стоимость аккаунта с монет займа и тех которые есть.
+        assetList = assetPairList.stream().flatMap(string -> Stream.of(string.subSequence(0, string.length() - 4).toString(), string.substring(string.length() - 4))).collect(Collectors.toSet());
+        LOGGER.info(getNetDeposit().toString());
         assetPairList.forEach(symbolPair -> assetPairTimeframeToRequestsMap.put(symbolPair.concat(TREND_TIMEFRAME), new TradingViewRequest().setAssetPair(symbolPair).setSide(trendMap.get(symbolPair)).setTimeframe(TREND_TIMEFRAME)));
     }
 
@@ -80,7 +81,7 @@ public class AssetService {
     }
 
     BigDecimal getUsdtEquivalentForOrder() {
-        return deposit.divide(BigDecimal.valueOf(assetPairList.size() * 2));
+        return getNetDeposit().divide(BigDecimal.valueOf(assetPairList.size()));
     }
 
     public void setTrendMap(Map<String, String> trendMap) {
@@ -101,5 +102,19 @@ public class AssetService {
 
     public Integer getRounding(String assetPairTimeframe) {
         return assetPairRounding.get(assetPairTimeframe);
+    }
+
+    private BigDecimal getNetDeposit() {
+        BigDecimal totalUsdtAltcoinDebt = BigDecimal.ZERO;
+        for (String symbol : assetList) {
+            if (!symbol.equals("USDT")) {
+                BigDecimal result = new BigDecimal(getByAssetName(symbol).getBorrowed()).multiply(getLastPriceOfAssetPair(symbol.concat("USDT")));
+                totalUsdtAltcoinDebt = totalUsdtAltcoinDebt.add(result);
+            }
+        }
+        MarginAssetBalance usdtBalance = getByAssetName("USDT");
+        final BigDecimal freeUsdt = new BigDecimal(usdtBalance.getFree());
+        final BigDecimal borrowedUsdt = new BigDecimal(usdtBalance.getBorrowed());
+        return freeUsdt.subtract(totalUsdtAltcoinDebt).subtract(borrowedUsdt);
     }
 }
