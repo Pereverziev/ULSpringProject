@@ -32,12 +32,12 @@ public class OrderService {
     private Map<String, NewOrderResponse> assetPairTimeframeToOpenPositionMap = new HashMap<>();
 
     public void makeOrder(TradingViewRequest request) {
+        String quantity = null;
         if (request.getSide().equals("BUY")) {
-            borrowService.borrowUsdt();
+            quantity = borrowService.borrowUsdt(request.getAssetPair());
         } else if (request.getSide().equals("SELL")) {
-            borrowService.borrowAsset(request.getAssetPair().subSequence(0, request.getAssetPair().length() - 4).toString());
+            quantity = borrowService.borrowAsset(request.getAssetPair().subSequence(0, request.getAssetPair().length() - 4).toString());
         }
-        final String quantity = assetService.getOrderQuantityForAssetPair(request.getAssetPair());
         final NewOrder newOrder = new NewOrder(request.getAssetPair(), OrderSide.valueOf(request.getSide()), OrderType.MARKET, null, quantity);
         LOGGER.info("Sending order:" + newOrder);
         final NewOrderResponse newOrderResponse = marginClient.newOrder(newOrder);

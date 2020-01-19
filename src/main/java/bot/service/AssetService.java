@@ -4,7 +4,6 @@ import bot.model.TradingViewRequest;
 import com.binance.api.client.BinanceApiMarginRestClient;
 import com.binance.api.client.BinanceApiRestClient;
 import com.binance.api.client.domain.account.MarginAssetBalance;
-import com.binance.api.client.exception.BinanceApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ import java.util.stream.Stream;
 public class AssetService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AssetService.class);
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
-    private static final BigDecimal EIGHTEEN = new BigDecimal(60);
+    private static final BigDecimal SIXTEEN = new BigDecimal(60);
     private static final String TREND_TIMEFRAME = "ONE_HOUR";
     private static final String FIVE_MINUTE = "FIVE_MINUTE";
 
@@ -35,6 +34,9 @@ public class AssetService {
     private BinanceApiRestClient client;
     @Value("${assetPair}")
     private List<String> assetPairList;
+    @Value("${depositForAssetPairs}")
+    private Long depositForAssetPairs;
+    private BigDecimal netDeposit;
     private Map<String, String> trendMap;
     private Set<String> assetList;
     private Map<String, Integer> assetPairRounding;
@@ -42,8 +44,8 @@ public class AssetService {
 
     @PostConstruct
     public void init() {
+        netDeposit = BigDecimal.valueOf(depositForAssetPairs);
         assetList = assetPairList.stream().flatMap(string -> Stream.of(string.subSequence(0, string.length() - 4).toString(), string.substring(string.length() - 4))).collect(Collectors.toSet());
-        LOGGER.info("Deposit at the start of the session:" + getNetDeposit().toString() + "$");
         assetPairList.forEach(symbolPair -> assetPairTimeframeToRequestsMap.put(symbolPair.concat(TREND_TIMEFRAME), new TradingViewRequest().setAssetPair(symbolPair).setSide(trendMap.get(symbolPair)).setTimeframe(TREND_TIMEFRAME)));
     }
 
@@ -67,8 +69,8 @@ public class AssetService {
         return null;
     }
 
-    String getOrderQuantityForAssetPair(String assetPair) {
-        BigDecimal response = getUsdtEquivalentForOrder().divide(getLastPriceOfAssetPair(assetPair), RoundingMode.FLOOR).round(new MathContext(assetPairRounding.get(assetPair)));
+    String getOrderQuantityForAssetPair(String assetPair, BigDecimal usdtEquivalentForOrder) {
+        BigDecimal response = usdtEquivalentForOrder.divide(getLastPriceOfAssetPair(assetPair), RoundingMode.FLOOR).round(new MathContext(assetPairRounding.get(assetPair)));
         if (assetPair.equals("BTCUSDT")) {
             response = response.round(new MathContext(assetPairRounding.get(assetPair)));
         }
@@ -85,7 +87,7 @@ public class AssetService {
     }
 
     BigDecimal getUsdtEquivalentForOrder() {
-        return getNetDeposit().multiply(EIGHTEEN).divide(ONE_HUNDRED);
+        return netDeposit.multiply(SIXTEEN).divide(ONE_HUNDRED);
     }
 
     public void setTrendMap(Map<String, String> trendMap) {
@@ -108,19 +110,19 @@ public class AssetService {
         return assetPairRounding.get(assetPairTimeframe);
     }
 
-    private BigDecimal getNetDeposit() {
-        BigDecimal totalUsdtAltcoinDebt = BigDecimal.ZERO;
-        BigDecimal totalUsdtAltcoinBalance = BigDecimal.ZERO;
-        for (String symbol : assetList) {
-            if (!symbol.equals("USDT")) {
-                final MarginAssetBalance balance = getByAssetName(symbol);
-                totalUsdtAltcoinDebt = totalUsdtAltcoinDebt.add(new BigDecimal(balance.getBorrowed()).multiply(getLastPriceOfAssetPair(symbol.concat("USDT"))));
-                totalUsdtAltcoinBalance = totalUsdtAltcoinBalance.add(new BigDecimal(balance.getFree()).multiply(getLastPriceOfAssetPair(symbol.concat("USDT"))));
-            }
-        }
-        MarginAssetBalance usdtBalance = getByAssetName("USDT");
-        final BigDecimal freeUsdt = new BigDecimal(usdtBalance.getFree());
-        final BigDecimal borrowedUsdt = new BigDecimal(usdtBalance.getBorrowed());
-        return freeUsdt.subtract(totalUsdtAltcoinDebt).subtract(borrowedUsdt).add(totalUsdtAltcoinBalance);
-    }
+//    private BigDecimal getNetDeposit() {
+//        BigDecimal totalUsdtAltcoinDebt = BigDecimal.ZERO;
+//        BigDecimal totalUsdtAltcoinBalance = BigDecimal.ZERO;
+//        for (String symbol : assetList) {
+//            if (!symbol.equals("USDT")) {
+//                final MarginAssetBalance balance = getByAssetName(symbol);
+//                totalUsdtAltcoinDebt = totalUsdtAltcoinDebt.add(new BigDecimal(balance.getBorrowed()).multiply(getLastPriceOfAssetPair(symbol.concat("USDT"))));
+//                totalUsdtAltcoinBalance = totalUsdtAltcoinBalance.add(new BigDecimal(balance.getFree()).multiply(getLastPriceOfAssetPair(symbol.concat("USDT"))));
+//            }
+//        }
+//        MarginAssetBalance usdtBalance = getByAssetName("USDT");
+//        final BigDecimal freeUsdt = new BigDecimal(usdtBalance.getFree());
+//        final BigDecimal borrowedUsdt = new BigDecimal(usdtBalance.getBorrowed());
+//        return freeUsdt.subtract(totalUsdtAltcoinDebt).subtract(borrowedUsdt).add(totalUsdtAltcoinBalance);
+//    }
 }
