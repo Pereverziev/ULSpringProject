@@ -16,8 +16,8 @@ class BorrowService {
     private AssetService assetService;
 
     void borrowUsdt() {
-        marginClient.borrow("USDT", assetService.getUsdtEquivalentForOrder().toString());
         LOGGER.info("Borrowing USDT:" + assetService.getUsdtEquivalentForOrder().toString());
+        marginClient.borrow("USDT", assetService.getUsdtEquivalentForOrder().toString());
     }
 
     void borrowAsset(String symbol) {
@@ -27,8 +27,8 @@ class BorrowService {
     }
 
     public void repayAsset(String symbol, String quantity) {
-        marginClient.repay(symbol, quantity);
         LOGGER.info("Repaying " + symbol + ":" + quantity);
+        marginClient.repay(symbol, quantity);
     }
 
 }

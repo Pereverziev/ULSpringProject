@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 public class AssetService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AssetService.class);
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
-    private static final BigDecimal EIGHTEEN = new BigDecimal(80);
+    private static final BigDecimal EIGHTEEN = new BigDecimal(60);
     private static final String TREND_TIMEFRAME = "ONE_HOUR";
     private static final String FIVE_MINUTE = "FIVE_MINUTE";
 

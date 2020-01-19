@@ -21,7 +21,7 @@ import java.util.Map;
 public class OrderService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderService.class);
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
-    private static final BigDecimal NINETEEN_EIGHT = new BigDecimal(98);
+    private static final BigDecimal NINETEEN_NINE_ZERO_FIVE = new BigDecimal(99.5);
 
     @Autowired
     private BinanceApiMarginRestClient marginClient;
@@ -47,8 +47,7 @@ public class OrderService {
     public void closePositionIfOneExists(String assetPairTimeframe) {
         final NewOrderResponse position = assetPairTimeframeToOpenPositionMap.get(assetPairTimeframe);
         if (position != null) {
-            final BigDecimal returnAmount = new BigDecimal(position.getExecutedQty()).multiply(NINETEEN_EIGHT).divide(ONE_HUNDRED, RoundingMode.DOWN).round(new MathContext(assetService.getRounding(position.getSymbol())));
-            LOGGER.info(returnAmount.toString());
+            final BigDecimal returnAmount = new BigDecimal(position.getExecutedQty()).multiply(NINETEEN_NINE_ZERO_FIVE).divide(ONE_HUNDRED, RoundingMode.DOWN).round(new MathContext(assetService.getRounding(position.getSymbol())));
             final NewOrder newOrder = new NewOrder(position.getSymbol(), position.getSide().equals(OrderSide.BUY) ? OrderSide.SELL : OrderSide.BUY, OrderType.MARKET, null, returnAmount.toString());
             LOGGER.info("Closing position " + position);
             final NewOrderResponse newOrderResponse = marginClient.newOrder(newOrder);
