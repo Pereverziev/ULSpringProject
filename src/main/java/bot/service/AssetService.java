@@ -4,6 +4,7 @@ import bot.model.TradingViewRequest;
 import com.binance.api.client.BinanceApiMarginRestClient;
 import com.binance.api.client.BinanceApiRestClient;
 import com.binance.api.client.domain.account.MarginAssetBalance;
+import com.binance.api.client.exception.BinanceApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,7 @@ import java.util.stream.Stream;
 public class AssetService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AssetService.class);
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
-    private static final BigDecimal NINETEEN = new BigDecimal(90);
-    private static final String USDT_SUFFIX = "USDT";
+    private static final BigDecimal EIGHTEEN = new BigDecimal(80);
     private static final String TREND_TIMEFRAME = "ONE_HOUR";
     private static final String FIVE_MINUTE = "FIVE_MINUTE";
 
@@ -43,7 +43,7 @@ public class AssetService {
     @PostConstruct
     public void init() {
         assetList = assetPairList.stream().flatMap(string -> Stream.of(string.subSequence(0, string.length() - 4).toString(), string.substring(string.length() - 4))).collect(Collectors.toSet());
-        LOGGER.info("Deposit at the start of the session:" + getNetDeposit().toString());
+        LOGGER.info("Deposit at the start of the session:" + getNetDeposit().toString() + "$");
         assetPairList.forEach(symbolPair -> assetPairTimeframeToRequestsMap.put(symbolPair.concat(TREND_TIMEFRAME), new TradingViewRequest().setAssetPair(symbolPair).setSide(trendMap.get(symbolPair)).setTimeframe(TREND_TIMEFRAME)));
     }
 
@@ -68,9 +68,12 @@ public class AssetService {
     }
 
     String getOrderQuantityForAssetPair(String assetPair) {
-        final BigDecimal responce = getUsdtEquivalentForOrder().divide(getLastPriceOfAssetPair(assetPair), RoundingMode.DOWN).round(new MathContext(assetPairRounding.get(assetPair)));
-        LOGGER.info("Order quantity for " + assetPair + " is " + responce);
-        return responce.toString();
+        BigDecimal response = getUsdtEquivalentForOrder().divide(getLastPriceOfAssetPair(assetPair), RoundingMode.FLOOR).round(new MathContext(assetPairRounding.get(assetPair)));
+        if (assetPair.equals("BTCUSDT")) {
+            response = response.round(new MathContext(assetPairRounding.get(assetPair)));
+        }
+        LOGGER.info("Order quantity for " + assetPair + " is " + response);
+        return response.toString();
     }
 
     public void replace(TradingViewRequest request) {
@@ -82,7 +85,7 @@ public class AssetService {
     }
 
     BigDecimal getUsdtEquivalentForOrder() {
-        return getNetDeposit().multiply(NINETEEN).divide(ONE_HUNDRED);
+        return getNetDeposit().multiply(EIGHTEEN).divide(ONE_HUNDRED);
     }
 
     public void setTrendMap(Map<String, String> trendMap) {

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,10 +47,11 @@ public class OrderService {
     public void closePositionIfOneExists(String assetPairTimeframe) {
         final NewOrderResponse position = assetPairTimeframeToOpenPositionMap.get(assetPairTimeframe);
         if (position != null) {
-            final BigDecimal returnAmount = new BigDecimal(position.getExecutedQty()).multiply(NINETEEN_EIGHT).divide(ONE_HUNDRED, new MathContext(assetService.getRounding(position.getSymbol())));
+            final BigDecimal returnAmount = new BigDecimal(position.getExecutedQty()).multiply(NINETEEN_EIGHT).divide(ONE_HUNDRED, RoundingMode.DOWN).round(new MathContext(assetService.getRounding(position.getSymbol())));
+            LOGGER.info(returnAmount.toString());
             final NewOrder newOrder = new NewOrder(position.getSymbol(), position.getSide().equals(OrderSide.BUY) ? OrderSide.SELL : OrderSide.BUY, OrderType.MARKET, null, returnAmount.toString());
-            final NewOrderResponse newOrderResponse = marginClient.newOrder(newOrder);
             LOGGER.info("Closing position " + position);
+            final NewOrderResponse newOrderResponse = marginClient.newOrder(newOrder);
             if (position.getSide().toString().equals("BUY")) { // if trade we want to close is BUY type, LONG, i need to repay USDT debt.
                 final BigDecimal loan = new BigDecimal(newOrderResponse.getExecutedQty()).multiply(assetService.getLastPriceOfAssetPair(position.getSymbol()));
                 borrowService.repayAsset("USDT", loan.toString());
