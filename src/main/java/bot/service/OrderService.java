@@ -21,7 +21,7 @@ import java.util.Map;
 public class OrderService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderService.class);
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
-    private static final BigDecimal NINETEEN_NINE_ZERO_FIVE = new BigDecimal(99.5);
+    private static final BigDecimal NINETEEN_NINE = new BigDecimal(99);
 
     @Autowired
     private BinanceApiMarginRestClient marginClient;
@@ -47,7 +47,7 @@ public class OrderService {
     public void closePositionIfOneExists(String assetPairTimeframe) {
         final NewOrderResponse position = assetPairTimeframeToOpenPositionMap.get(assetPairTimeframe);
         if (position != null) {
-            final BigDecimal returnAmount = new BigDecimal(position.getExecutedQty()).multiply(NINETEEN_NINE_ZERO_FIVE).divide(ONE_HUNDRED, RoundingMode.DOWN).round(new MathContext(assetService.getRounding(position.getSymbol())));
+            final BigDecimal returnAmount = new BigDecimal(position.getExecutedQty());
             final NewOrder newOrder = new NewOrder(position.getSymbol(), position.getSide().equals(OrderSide.BUY) ? OrderSide.SELL : OrderSide.BUY, OrderType.MARKET, null, returnAmount.toString());
             LOGGER.info("Closing position " + position);
             final NewOrderResponse newOrderResponse = marginClient.newOrder(newOrder);
@@ -55,7 +55,8 @@ public class OrderService {
                 final BigDecimal loan = new BigDecimal(newOrderResponse.getExecutedQty()).multiply(assetService.getLastPriceOfAssetPair(position.getSymbol()));
                 borrowService.repayAsset("USDT", loan.toString());
             } else {
-                borrowService.repayAsset(position.getSymbol().subSequence(0, position.getSymbol().length() - 4).toString(), newOrderResponse.getExecutedQty());
+                final BigDecimal loan = new BigDecimal(newOrderResponse.getExecutedQty()).multiply(NINETEEN_NINE).divide(ONE_HUNDRED, RoundingMode.DOWN).round(new MathContext(assetService.getRounding(position.getSymbol())));
+                borrowService.repayAsset(position.getSymbol().subSequence(0, position.getSymbol().length() - 4).toString(), loan.toString());
             }
             assetPairTimeframeToOpenPositionMap.remove(assetPairTimeframe);
         }

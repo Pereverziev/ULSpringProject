@@ -34,18 +34,14 @@ public class AssetService {
     private BinanceApiRestClient client;
     @Value("${assetPair}")
     private List<String> assetPairList;
-    @Value("${depositForAssetPairs}")
-    private Long depositForAssetPairs;
-    private BigDecimal netDeposit;
+    @Value("${usdtQuantityForOrder}")
+    private Long usdtQuantityForOrder;
     private Map<String, String> trendMap;
-    private Set<String> assetList;
     private Map<String, Integer> assetPairRounding;
     private Map<String, TradingViewRequest> assetPairTimeframeToRequestsMap = new HashMap<>();
 
     @PostConstruct
     public void init() {
-        netDeposit = BigDecimal.valueOf(depositForAssetPairs);
-        assetList = assetPairList.stream().flatMap(string -> Stream.of(string.subSequence(0, string.length() - 4).toString(), string.substring(string.length() - 4))).collect(Collectors.toSet());
         assetPairList.forEach(symbolPair -> assetPairTimeframeToRequestsMap.put(symbolPair.concat(TREND_TIMEFRAME), new TradingViewRequest().setAssetPair(symbolPair).setSide(trendMap.get(symbolPair)).setTimeframe(TREND_TIMEFRAME)));
     }
 
@@ -69,8 +65,8 @@ public class AssetService {
         return null;
     }
 
-    String getOrderQuantityForAssetPair(String assetPair, BigDecimal usdtEquivalentForOrder) {
-        BigDecimal response = usdtEquivalentForOrder.divide(getLastPriceOfAssetPair(assetPair), RoundingMode.FLOOR).round(new MathContext(assetPairRounding.get(assetPair)));
+    String getOrderQuantityForAssetPair(String assetPair) {
+        BigDecimal response = getUsdtEquivalentForOrder().divide(getLastPriceOfAssetPair(assetPair),new MathContext(assetPairRounding.get(assetPair)));
         if (assetPair.equals("BTCUSDT")) {
             response = response.round(new MathContext(assetPairRounding.get(assetPair)));
         }
@@ -86,8 +82,8 @@ public class AssetService {
         assetPairTimeframeToRequestsMap.remove(assertPairTimeframe);
     }
 
-    BigDecimal getUsdtEquivalentForOrder() {
-        return netDeposit.multiply(SIXTEEN).divide(ONE_HUNDRED);
+    public BigDecimal getUsdtEquivalentForOrder() {
+        return BigDecimal.valueOf(usdtQuantityForOrder);
     }
 
     public void setTrendMap(Map<String, String> trendMap) {
