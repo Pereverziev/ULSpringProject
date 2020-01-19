@@ -13,12 +13,15 @@ public class H1AlertHandler {
     private AssetService assetService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private M5AlertHandler m5AlertHandler;
 
     public void handleAlert(TradingViewRequest request) {
         if (!assetService.getTrendSide(request.getAssetPair()).equals(request.getSide())) {
             orderService.closePositionIfOneExists(request.getAssetPair().concat("FIVE_MINUTE"));
             assetService.replace(request);
             assetService.invalidate(request.getAssetPair().concat("FIVE_MINUTE"));
+            m5AlertHandler.handleAlert(new TradingViewRequest().setAssetPair(request.getAssetPair()).setSide(request.getSide()).setTimeframe("FIVE_MINUTE"));
         }
     }
 }
