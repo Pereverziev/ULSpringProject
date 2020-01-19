@@ -6,14 +6,10 @@ import com.binance.api.client.BinanceApiRestClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 @EnableConfigurationProperties
-@PropertySource("classpath:configuration.properties")
 public class TradeBotConfiguration {
 
     @Value("${apiKey}")
