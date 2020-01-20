@@ -17,11 +17,8 @@ public class H1AlertHandler {
     private M5AlertHandler m5AlertHandler;
 
     public void handleAlert(TradingViewRequest request) {
-        if (!assetService.getTrendSide(request.getAssetPair()).equals(request.getSide())) {
-            orderService.closePositionIfOneExists(request.getAssetPair().concat("FIVE_MINUTE"));
-            assetService.invalidate(request.getAssetPair().concat("FIVE_MINUTE"));
-            assetService.replace(request);
-            m5AlertHandler.handleAlert(new TradingViewRequest().setAssetPair(request.getAssetPair()).setSide(request.getSide()).setTimeframe("FIVE_MINUTE"));
+        if (!assetService.getH1Side(request.getAssetPair()).equals(request.getSide())) {
+            assetService.setLast1HSignalSideForAssetPair(request.getAssetPair(), request.getSide());
         }
     }
 }

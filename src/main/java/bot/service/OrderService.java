@@ -32,16 +32,12 @@ public class OrderService {
     private Map<String, NewOrderResponse> assetPairTimeframeToOpenPositionMap = new HashMap<>();
 
     public void makeOrder(TradingViewRequest request) {
-        String quantity = null;
-        if (request.getSide().equals("BUY")) {
-            quantity = borrowService.borrowUsdt(request.getAssetPair());
-        } else if (request.getSide().equals("SELL")) {
-            quantity = borrowService.borrowAsset(request.getAssetPair().subSequence(0, request.getAssetPair().length() - 4).toString());
-        }
+        final String quantity = request.getSide().equals("BUY") ? borrowService.borrowUsdt(request.getAssetPair()) : borrowService.borrowAsset(request.getAssetPair().subSequence(0, request.getAssetPair().length() - 4).toString());
         final NewOrder newOrder = new NewOrder(request.getAssetPair(), OrderSide.valueOf(request.getSide()), OrderType.MARKET, null, quantity);
         LOGGER.info("Sending order:" + newOrder);
         final NewOrderResponse newOrderResponse = marginClient.newOrder(newOrder);
         assetPairTimeframeToOpenPositionMap.put(request.getAssetPair().concat(request.getTimeframe()), newOrderResponse);
+        assetService.setLast5MSignalSideForAssetPair(request.getAssetPair(), request.getSide());
     }
 
     public void closePositionIfOneExists(String assetPairTimeframe) {
@@ -53,12 +49,13 @@ public class OrderService {
             final NewOrderResponse newOrderResponse = marginClient.newOrder(newOrder);
             if (position.getSide().toString().equals("BUY")) { // if trade we want to close is BUY type, LONG, i need to repay USDT debt.
 //                final BigDecimal loan = new BigDecimal(newOrderResponse.getExecutedQty()).multiply(assetService.getLastPriceOfAssetPair(position.getSymbol())).multiply(NINETEEN_NINE).divide(ONE_HUNDRED, RoundingMode.DOWN);
-                borrowService.repayAsset("USDT", "49");
+                borrowService.repayAsset("USDT", "20");
             } else {
-                final BigDecimal loan = new BigDecimal(newOrderResponse.getExecutedQty()).multiply(NINETEEN_NINE).divide(ONE_HUNDRED, RoundingMode.DOWN).round(new MathContext(assetService.getRounding(position.getSymbol())));
-                borrowService.repayAsset(position.getSymbol().subSequence(0, position.getSymbol().length() - 4).toString(), loan.toString());
+                final BigDecimal loan = new BigDecimal(newOrderResponse.getExecutedQty()).multiply(NINETEEN_NINE).divide(ONE_HUNDRED, RoundingMode.DOWN).round(new MathContext(assetService.getRounding(position.getSymbol()), RoundingMode.DOWN));
+                borrowService.repayAsset(position.getSymbol().subSequence(0, position.getSymbol().length() - 4).toString(), loan.toPlainString());
             }
             assetPairTimeframeToOpenPositionMap.remove(assetPairTimeframe);
+            assetService.setLast5MSignalSideForAssetPair(position.getSymbol(), position.getSide().toString().equals("SELL") ? "BUY" : "SELL");
         }
     }
 }

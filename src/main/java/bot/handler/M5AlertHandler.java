@@ -15,15 +15,14 @@ public class M5AlertHandler {
     private OrderService orderService;
 
     public void handleAlert(TradingViewRequest request) {
-        final String trendSide = assetService.getTrendSide(request.getAssetPair());
-        final String previousSide = assetService.getLast5MSignalSideForAssetPair(request.getAssetPair());
-        if (trendSide.equals(request.getSide()) && !request.getSide().equals(previousSide)) {
+        final String h1Side = assetService.getH1Side(request.getAssetPair());
+        final String m45Side = assetService.getLast45MSignalSideForAssetPair(request.getAssetPair());
+        final String previousM5Side = assetService.getLast5MSignalSideForAssetPair(request.getAssetPair());
+        if (h1Side.equals(request.getSide()) && !request.getSide().equals(previousM5Side) && m45Side.equals(h1Side)) {
             orderService.makeOrder(request);
-            assetService.replace(request);
         }
-        if (!trendSide.equals(request.getSide())) {
+        if (!h1Side.equals(request.getSide())) {
             orderService.closePositionIfOneExists(request.getAssetPair().concat(request.getTimeframe()));
-            assetService.replace(request);
         }
     }
 }
