@@ -52,8 +52,8 @@ public class OrderService {
             LOGGER.info("Closing position " + position);
             final NewOrderResponse newOrderResponse = marginClient.newOrder(newOrder);
             if (position.getSide().toString().equals("BUY")) { // if trade we want to close is BUY type, LONG, i need to repay USDT debt.
-                final BigDecimal loan = new BigDecimal(newOrderResponse.getExecutedQty()).multiply(assetService.getLastPriceOfAssetPair(position.getSymbol()));
-                borrowService.repayAsset("USDT", loan.toString());
+//                final BigDecimal loan = new BigDecimal(newOrderResponse.getExecutedQty()).multiply(assetService.getLastPriceOfAssetPair(position.getSymbol())).multiply(NINETEEN_NINE).divide(ONE_HUNDRED, RoundingMode.DOWN);
+                borrowService.repayAsset("USDT", "49");
             } else {
                 final BigDecimal loan = new BigDecimal(newOrderResponse.getExecutedQty()).multiply(NINETEEN_NINE).divide(ONE_HUNDRED, RoundingMode.DOWN).round(new MathContext(assetService.getRounding(position.getSymbol())));
                 borrowService.repayAsset(position.getSymbol().subSequence(0, position.getSymbol().length() - 4).toString(), loan.toString());
