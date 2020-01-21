@@ -19,15 +19,11 @@ public class TradeBotConfiguration {
 
     @Bean
     public BinanceApiMarginRestClient binanceApiMarginRestClient() {
-        final BinanceApiClientFactory binanceApiClientFactory = BinanceApiClientFactory.newInstance(apiKey, secret);
-        final BinanceApiMarginRestClient binanceApiMarginRestClient = binanceApiClientFactory.newMarginRestClient();
-        binanceApiMarginRestClient.getAccount().setBorrowEnabled(true);
-        return binanceApiMarginRestClient;
+        return BinanceApiClientFactory.newInstance(apiKey, secret).newMarginRestClient();
     }
 
     @Bean
     public BinanceApiRestClient binanceApiRestClient() {
-        final BinanceApiClientFactory binanceApiClientFactory = BinanceApiClientFactory.newInstance(apiKey, secret);
-        return binanceApiClientFactory.newRestClient();
+        return BinanceApiClientFactory.newInstance(apiKey, secret).newRestClient();
     }
 }

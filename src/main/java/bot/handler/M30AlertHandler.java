@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class H1AlertHandler {
+public class M30AlertHandler {
 
     @Autowired
     private AssetService assetService;
@@ -17,8 +17,8 @@ public class H1AlertHandler {
     private M5AlertHandler m5AlertHandler;
 
     public void handleAlert(TradingViewRequest request) {
-        if (!assetService.getH1Side(request.getAssetPair()).equals(request.getSide())) {
-            assetService.setLast1HSignalSideForAssetPair(request.getAssetPair(), request.getSide());
+        if (!assetService.getM30Side(request.getAssetPair()).equals(request.getSide())) {
+            assetService.setM30Side(request.getAssetPair(), request.getSide());
         }
     }
 }

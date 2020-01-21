@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class M45AlertHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(M45AlertHandler.class);
+public class M15AlertHandler {
+    private static final Logger LOGGER = LoggerFactory.getLogger(M15AlertHandler.class);
 
     @Autowired
     private AssetService assetService;
@@ -20,9 +20,9 @@ public class M45AlertHandler {
     private OrderService orderService;
 
     public void handle(TradingViewRequest request) {
-        final String side = assetService.getLast45MSignalSideForAssetPair(request.getAssetPair());
+        final String side = assetService.getM15Side(request.getAssetPair());
         if (!request.getSide().equals(side)) {
-            assetService.setLast45MSignalSideForAssetPair(request.getAssetPair(), request.getSide());
+            assetService.setM15Side(request.getAssetPair(), request.getSide());
             orderService.closePositionIfOneExists(request.getAssetPair().concat("FIVE_MINUTE"));
         }
     }
