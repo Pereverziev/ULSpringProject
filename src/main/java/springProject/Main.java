@@ -1,4 +1,4 @@
-package bot;
+package springProject;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 

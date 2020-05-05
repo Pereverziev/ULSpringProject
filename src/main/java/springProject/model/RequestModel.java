@@ -1,4 +1,4 @@
-package bot.model;
+package springProject.model;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
