@@ -7,11 +7,7 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 @Accessors(chain = true)
-public class TradingViewRequest {
+public class RequestModel {
     @NotBlank
-    private String assetPair;
-    @NotBlank
-    private String timeframe;
-    @NotBlank
-    private String side;
+    private String message;
 }

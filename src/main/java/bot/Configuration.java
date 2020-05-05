@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 @EnableConfigurationProperties
-public class TradeBotConfiguration {
+public class Configuration {
 
     @Value("${apiKey}")
     private String apiKey;
